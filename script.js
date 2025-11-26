@@ -1,5 +1,5 @@
 // IMPORTANT: Replace this with the URL of your deployed Python backend API!
-const API_ENDPOINT = "https://ai-chatbot-backend-xbng.onrender.com"; 
+const API_ENDPOINT = "https://ai-chatbot-backend-xbng.onrender.com/api/chat"; 
 
 const chatMessages = document.getElementById('chat-messages');
 const userInput = document.getElementById('user-input');
