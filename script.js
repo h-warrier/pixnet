@@ -1,4 +1,4 @@
-// IMPORTANT: Replace this with the URL of your deployed Python backend API!
+// Ambient animations always enabled unless user requests reduced motion
 const API_ENDPOINT = "https://ai-chatbot-backend-xbng.onrender.com/api/chat";
 
 const chatMessages = document.getElementById('chat-messages');
@@ -6,76 +6,117 @@ const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
 const btnTheme = document.getElementById('btn-theme');
 
+// Session id persistence
 let sessionId = localStorage.getItem('chatbotSessionId');
 if (!sessionId) {
     sessionId = 'session_' + Date.now() + Math.random().toString(16).slice(2);
     localStorage.setItem('chatbotSessionId', sessionId);
 }
 
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const lowPower = navigator.deviceMemory && navigator.deviceMemory <= 2;
+// --- Blob animation state ---
+const blobs = Array.from(document.querySelectorAll('.blob'));
+const blobState = blobs.map((b, i) => ({
+    el: b,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    vx: (Math.random() - 0.5) * 0.04,
+    vy: (Math.random() - 0.5) * 0.04,
+    hue: Math.random() * 360,
+    hueSpeed: (Math.random() - 0.5) * 0.6
+}));
 
+function updateBlobs(ts, last) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const delta = last ? ts - last : 16;
+
+    for (const s of blobState){
+        s.x += s.vx * (delta/16);
+        s.y += s.vy * (delta/16);
+        // wrap around
+        if (s.x < -20) s.x = 120;
+        if (s.x > 120) s.x = -20;
+        if (s.y < -20) s.y = 120;
+        if (s.y > 120) s.y = -20;
+        s.hue = (s.hue + s.hueSpeed * (delta/16) + 360) % 360;
+        const tx = (s.x - 50) * 2.0;
+        const ty = (s.y - 50) * 1.2;
+        s.el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1.06)`;
+        s.el.style.background = `radial-gradient(circle at 40% 40%, hsla(${s.hue},90%,65%,0.36), hsla(${(s.hue+30)%360},90%,55%,0.10) 30%, transparent 60%)`;
+    }
+    return ts;
+}
+
+let lastFrame = 0;
+function loop(ts){
+    lastFrame = updateBlobs(ts, lastFrame);
+    requestAnimationFrame(loop);
+}
+
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    requestAnimationFrame(loop);
+}
+
+// Theme toggle
+if (btnTheme){
+    btnTheme.addEventListener('click', ()=>{
+        const root = document.documentElement;
+        const current = getComputedStyle(root).getPropertyValue('--bg').trim();
+        if (current === '#0f1724'){
+            root.style.setProperty('--bg','#f6f9fb');
+            root.style.setProperty('--text','#0b1220');
+        } else {
+            root.style.setProperty('--bg','#0f1724');
+            root.style.setProperty('--text','#EAF2F8');
+        }
+        btnTheme.querySelector('i').classList.toggle('fa-moon');
+        btnTheme.querySelector('i').classList.toggle('fa-sun');
+    });
+}
+
+// Chat functions (unchanged)
 function displayMessage(message, sender) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', `${sender}-message`);
     messageElement.textContent = message;
     chatMessages.appendChild(messageElement);
-
-    if (chatMessages.childElementCount > 150) {
-        for (let i = 0; i < 30; i++) {
+    if (chatMessages.childElementCount > 200){
+        const removeCount = 40;
+        for (let i=0;i<removeCount;i++){
             if (chatMessages.firstChild) chatMessages.removeChild(chatMessages.firstChild);
         }
     }
-
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function setLoadingState(isLoading) {
     sendButton.disabled = isLoading;
     userInput.disabled = isLoading;
-    userInput.placeholder = isLoading ? 'Thinking...' : 'Type your message...';
-    sendButton.innerHTML = isLoading
-        ? '<i class="fas fa-spinner fa-spin"></i>'
+    userInput.placeholder = isLoading ? "Thinking..." : "Type your message...";
+    sendButton.innerHTML = isLoading 
+        ? '<i class="fas fa-spinner fa-spin"></i>' 
         : '<i class="fas fa-paper-plane"></i>';
 }
 
 async function sendMessage() {
     const message = userInput.value.trim();
-    if (!message) return;
-
+    if (message === "") return;
     displayMessage(message, 'user');
     userInput.value = '';
     setLoadingState(true);
-
     try {
-        const payload = {
-            message,
-            session_id: sessionId
-        };
-
+        const payload = { message: message, session_id: sessionId };
         const response = await fetch(API_ENDPOINT, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type':'application/json'},
             body: JSON.stringify(payload)
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
-
-        if (data.error) {
-            displayMessage(`[Error: ${data.error}]`, 'bot');
-        } else {
-            displayMessage(data.response, 'bot');
-            if (data.session_id && data.session_id !== sessionId) {
-                sessionId = data.session_id;
-                localStorage.setItem('chatbotSessionId', sessionId);
-            }
-        }
-    } catch (error) {
-        console.error('Fetch error:', error);
+        if (data.error) displayMessage(`[Error: ${data.error}]`, 'bot');
+        else displayMessage(data.response, 'bot');
+        if (data.session_id && data.session_id !== sessionId){ sessionId = data.session_id; localStorage.setItem('chatbotSessionId', sessionId); }
+    } catch (err){
+        console.error('Fetch error:', err);
         displayMessage("Sorry, I can't connect to the server right now.", 'bot');
     } finally {
         setLoadingState(false);
@@ -84,62 +125,7 @@ async function sendMessage() {
 }
 
 sendButton.addEventListener('click', sendMessage);
-userInput.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
-userInput.addEventListener('input', () => {
-    sendButton.disabled = userInput.value.trim() === '';
-});
+userInput.addEventListener('keypress', function(e){ if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+userInput.addEventListener('input', ()=>{ sendButton.disabled = userInput.value.trim() === ''; });
 
-if (btnTheme) {
-    btnTheme.addEventListener('click', () => {
-        const root = document.documentElement;
-        const isDark = getComputedStyle(root).getPropertyValue('--bg').trim() === '#0f1724';
-        root.style.setProperty('--bg', isDark ? '#f5f7ff' : '#0f1724');
-        root.style.setProperty('--bg-2', isDark ? '#edf2ff' : '#111827');
-        root.style.setProperty('--text', isDark ? '#0f172a' : '#edf4ff');
-        root.style.setProperty('--muted', isDark ? 'rgba(15, 23, 42, 0.7)' : 'rgba(237, 244, 255, 0.72)');
-        root.style.setProperty('--border', isDark ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255,255,255,0.12)');
-        btnTheme.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    });
-}
-
-function startAmbientMotion() {
-    if (prefersReducedMotion || lowPower) return;
-
-    const blobs = Array.from(document.querySelectorAll('.blob'));
-    if (!blobs.length) return;
-
-    let lastTs = 0;
-    let active = true;
-
-    function animate(ts) {
-        if (!active) return;
-        const frameInterval = 1000 / 24;
-        if (ts - lastTs < frameInterval) {
-            requestAnimationFrame(animate);
-            return;
-        }
-
-        lastTs = ts;
-
-        blobs.forEach((blob, index) => {
-            const baseX = (index % 2 === 0 ? 1 : -1) * ((ts * 0.016) + index * 22);
-            const baseY = (index % 3 === 0 ? 1 : -1) * ((ts * 0.012) + index * 18);
-            blob.style.transform = `translate3d(${(baseX % 42) - 20}px, ${(baseY % 32) - 16}px, 0) scale(${1 + (index % 3) * 0.04})`;
-        });
-
-        requestAnimationFrame(animate);
-    }
-
-    requestAnimationFrame(animate);
-}
-
-if (userInput.value.trim() !== '') {
-    sendButton.disabled = false;
-}
-
-startAmbientMotion();
+if (userInput.value.trim() !== '') sendButton.disabled = false;
