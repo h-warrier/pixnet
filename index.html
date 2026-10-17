@@ -4,59 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixNet</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
-    <div class="ambient-bg" aria-hidden="true">
-        <span class="blob b1"></span>
-        <span class="blob b2"></span>
-        <span class="blob b3"></span>
-        <span class="blob b4"></span>
-    </div>
-
-    <div class="app-grid">
-        <aside class="sidebar">
-            <div class="brand">
-                <h2>PixNet</h2>
-                <p class="tag">AI Chat · Desktop</p>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h3>PixNet</h3>
+        </header>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+                Hello! I'm an AI assistant. How can I help you today?
             </div>
+        </div>
 
-            <div class="conversations">
-                <div class="conv active">General</div>
-            </div>
-
-            <footer class="sidebar-footer">
-                <small>Logged in as <strong>h-warrier</strong></small>
-            </footer>
-        </aside>
-
-        <main class="main-chat">
-            <header class="chat-header">
-                <div class="header-left">
-                    <h3>General</h3>
-                    <span class="status">Online</span>
-                </div>
-                <div class="header-right">
-                    <button class="icon-btn" id="btn-theme" title="Toggle theme"><i class="fas fa-moon"></i></button>
-                </div>
-            </header>
-
-            <section class="chat-container">
-                <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
-                    <div class="message bot-message">Hello! I'm an AI assistant. How can I help you today?</div>
-                </div>
-
-                <div class="chat-input-area">
-                    <input type="text" id="user-input" placeholder="Type your message... (Enter to send, Ctrl+Enter for newline)" autofocus>
-                    <button id="send-button" disabled title="Send message">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
-            </section>
-        </main>
+        <div class="chat-input-area">
+            <textarea id="user-input" rows="2" placeholder="Type your message... (Enter to send, Shift+Enter for newline)" autofocus></textarea>
+            <button id="send-button" type="button" disabled aria-label="Send message">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        
     </div>
 
     <script src="script.js"></script>
