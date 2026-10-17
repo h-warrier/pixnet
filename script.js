@@ -1,19 +1,16 @@
 // Ambient animations always enabled unless user requests reduced motion
 const API_ENDPOINT = "https://ai-chatbot-backend-xbng.onrender.com/api/chat";
-
 const chatMessages = document.getElementById('chat-messages');
 const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
 const btnTheme = document.getElementById('btn-theme');
 
-// Session id persistence
 let sessionId = localStorage.getItem('chatbotSessionId');
 if (!sessionId) {
     sessionId = 'session_' + Date.now() + Math.random().toString(16).slice(2);
     localStorage.setItem('chatbotSessionId', sessionId);
 }
 
-// --- Blob animation state ---
 const blobs = Array.from(document.querySelectorAll('.blob'));
 const blobState = blobs.map((b, i) => ({
     el: b,
@@ -28,11 +25,9 @@ const blobState = blobs.map((b, i) => ({
 function updateBlobs(ts, last) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const delta = last ? ts - last : 16;
-
     for (const s of blobState){
         s.x += s.vx * (delta/16);
         s.y += s.vy * (delta/16);
-        // wrap around
         if (s.x < -20) s.x = 120;
         if (s.x > 120) s.x = -20;
         if (s.y < -20) s.y = 120;
@@ -56,7 +51,6 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     requestAnimationFrame(loop);
 }
 
-// Theme toggle
 if (btnTheme){
     btnTheme.addEventListener('click', ()=>{
         const root = document.documentElement;
@@ -73,7 +67,6 @@ if (btnTheme){
     });
 }
 
-// Chat functions (unchanged)
 function displayMessage(message, sender) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', `${sender}-message`);
@@ -92,9 +85,7 @@ function setLoadingState(isLoading) {
     sendButton.disabled = isLoading;
     userInput.disabled = isLoading;
     userInput.placeholder = isLoading ? "Thinking..." : "Type your message...";
-    sendButton.innerHTML = isLoading 
-        ? '<i class="fas fa-spinner fa-spin"></i>' 
-        : '<i class="fas fa-paper-plane"></i>';
+    sendButton.innerHTML = isLoading ? '<i class="fas fa-spinner fa-spin"></i>' : '<i class="fas fa-paper-plane"></i>';
 }
 
 async function sendMessage() {
@@ -127,68 +118,4 @@ async function sendMessage() {
 sendButton.addEventListener('click', sendMessage);
 userInput.addEventListener('keypress', function(e){ if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 userInput.addEventListener('input', ()=>{ sendButton.disabled = userInput.value.trim() === ''; });
-
 if (userInput.value.trim() !== '') sendButton.disabled = false;
-
-// --- Feedback modal behavior ---
-const convFeedback = document.getElementById('conv-feedback');
-const feedbackModal = document.getElementById('feedback-modal');
-const feedbackClose = document.getElementById('feedback-close');
-const fbSend = document.getElementById('fb-send');
-const fbCopy = document.getElementById('fb-copy');
-const fbSubject = document.getElementById('fb-subject');
-const fbBody = document.getElementById('fb-body');
-const FEEDBACK_EMAIL = 'warrier1414@gmail.com';
-
-function openFeedbackModal(){
-    if (!feedbackModal) return;
-    feedbackModal.setAttribute('aria-hidden','false');
-    // focus the subject field
-    if (fbSubject) fbSubject.focus();
-}
-function closeFeedbackModal(){
-    if (!feedbackModal) return;
-    feedbackModal.setAttribute('aria-hidden','true');
-}
-
-if (convFeedback){
-    convFeedback.addEventListener('click', (e)=>{
-        e.preventDefault();
-        openFeedbackModal();
-    });
-}
-if (feedbackClose){ feedbackClose.addEventListener('click', closeFeedbackModal); }
-
-// send via mail client using mailto:
-if (fbSend){
-    fbSend.addEventListener('click', ()=>{
-        const subject = fbSubject && fbSubject.value ? fbSubject.value : 'PixNet feedback';
-        const body = fbBody && fbBody.value ? fbBody.value : '';
-        const mailto = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        // attempt to open mail client
-        window.location.href = mailto;
-        closeFeedbackModal();
-    });
-}
-
-// copy email to clipboard as fallback
-if (fbCopy){
-    fbCopy.addEventListener('click', async ()=>{
-        try{
-            await navigator.clipboard.writeText(FEEDBACK_EMAIL);
-            fbCopy.textContent = 'Copied!';
-            setTimeout(()=> fbCopy.textContent = 'Copy Email Address', 2000);
-        }catch(err){
-            console.warn('Clipboard failed', err);
-            // fallback: select and prompt
-            const ta = document.createElement('textarea'); ta.value = FEEDBACK_EMAIL; document.body.appendChild(ta); ta.select();
-            try{ document.execCommand('copy'); fbCopy.textContent = 'Copied!'; }catch(e){ alert(`Email: ${FEEDBACK_EMAIL}`); }
-            document.body.removeChild(ta);
-        }
-    });
-}
-
-// close on Escape
-document.addEventListener('keydown', (e)=>{
-    if (e.key === 'Escape') closeFeedbackModal();
-});

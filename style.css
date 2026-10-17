@@ -1,6 +1,5 @@
 /* Liquid glass + ambient multicolor background
-   Full ambient enabled (failsafe removed): animations run on all devices unless user requests reduced motion.
-   Added modal styles for feedback mail sending.
+   Full ambient enabled, but with no extra sidebar sections beyond General.
 */
 :root{
   --bg:#0f1724;
@@ -11,7 +10,6 @@
   --text: #EAF2F8;
   --muted: rgba(234,242,248,0.7);
 }
-/* Basic layout reset */
 *{box-sizing:border-box}
 html,body{height:100%;}
 body{
@@ -30,7 +28,6 @@ body{
   padding:40px;
   overflow:hidden;
 }
-/* Ambient background container */
 .ambient-bg{
   position:fixed;
   inset:0;
@@ -53,7 +50,6 @@ body{
 .blob.b2{right:-15%;top:10%;background:radial-gradient(circle at 70% 60%, rgba(80,110,255,0.35), rgba(80,110,255,0.12) 30%, transparent 60%)}
 .blob.b3{left:20%;bottom:-10%;background:radial-gradient(circle at 40% 40%, rgba(90,255,150,0.32), rgba(90,255,150,0.10) 30%, transparent 60%)}
 .blob.b4{right:20%;bottom:-10%;background:radial-gradient(circle at 60% 60%, rgba(255,200,80,0.32), rgba(255,200,80,0.10) 30%, transparent 60%)}
-/* App grid */
 .app-grid{
   position:relative;
   z-index:1;
@@ -64,7 +60,6 @@ body{
   gap:28px;
   align-items:stretch;
 }
-/* Sidebar (glass) */
 .sidebar{
   background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
   border:1px solid rgba(255,255,255,0.06);
@@ -81,74 +76,36 @@ body{
 .brand .tag{color:var(--muted);font-size:12px;margin-top:6px}
 .conversations{margin-top:28px;display:flex;flex-direction:column;gap:10px}
 .conv{
-  padding:12px 14px;border-radius:12px;color:var(--muted);cursor:pointer;transition:all .18s ease;
+  padding:12px 14px;border-radius:12px;color:var(--muted);cursor:pointer;transition:all .18s ease;background:rgba(255,255,255,0.01);border:1px solid transparent;
 }
-.conv:hover{transform:translateY(-3px);background:rgba(255,255,255,0.02);color:var(--text)}
 .conv.active{background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));color:var(--text);box-shadow: inset 0 -1px 0 rgba(255,255,255,0.02)}
 .sidebar-footer{color:var(--muted);font-size:12px;text-align:left}
-/* Main chat area (glass card) */
 .main-chat{display:flex;flex-direction:column}
 .chat-header{display:flex;align-items:center;justify-content:space-between;padding:16px 10px 0 10px}
 .header-left h3{margin:0;font-size:18px}
 .status{font-size:12px;color:var(--muted);margin-left:10px}
 .icon-btn{background:transparent;border:none;color:var(--muted);padding:8px;border-radius:10px;cursor:pointer}
 .icon-btn:hover{color:var(--text);background:rgba(255,255,255,0.02)}
-
 .chat-container{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  margin-top:10px;
-  border-radius:16px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.06);
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  backdrop-filter: blur(10px) saturate(1.1);
-  -webkit-backdrop-filter: blur(10px) saturate(1.1);
-  box-shadow: 0 20px 50px rgba(2,6,23,0.5);
+  flex:1;display:flex;flex-direction:column;margin-top:10px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(10px) saturate(1.1);-webkit-backdrop-filter: blur(10px) saturate(1.1);box-shadow:0 20px 50px rgba(2,6,23,0.5);
 }
-.chat-messages{
-  padding:28px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;
-}
+.chat-messages{padding:28px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;}
 .message{max-width:75%;padding:12px 16px;border-radius:14px;font-size:15px;line-height:1.35}
 .user-message{align-self:flex-end;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);box-shadow: 0 6px 18px rgba(2,6,23,0.35)}
 .bot-message{align-self:flex-start;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04)}
-/* Input area (glass bar) */
 .chat-input-area{display:flex;padding:16px;border-top:1px solid rgba(255,255,255,0.02);gap:12px}
 #user-input{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);padding:14px;border-radius:12px;color:var(--text);outline:none;font-size:15px}
 #user-input::placeholder{color:rgba(234,242,248,0.55)}
-#user-input:focus{box-shadow:0 8px 20px rgba(2,6,23,0.36)}
 #send-button{background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));border:none;padding:12px 14px;border-radius:10px;cursor:pointer;color:var(--text);display:inline-flex;align-items:center;justify-content:center}
 #send-button:disabled{opacity:0.5}
-/* Responsive adjustments (keep ambient enabled even on small screens) */
 @media(max-width:880px){
-  .app-grid{grid-template-columns: 1fr;gap:18px;padding:20px;width:calc(100% - 40px);height:auto}
+  .app-grid{grid-template-columns:1fr;gap:18px;padding:20px;width:calc(100% - 40px);height:auto}
   .sidebar{order:2}
   .main-chat{order:1}
 }
-/* Reduce motion and heavy effects for users who prefer it */
 @media (prefers-reduced-motion: reduce){
   .blob{animation:none;transition:none;filter:blur(32px)!important;}
   .conv:hover{transform:none}
   .chat-messages{scroll-behavior:auto}
 }
-/* Accessibility: ensure contrast improvements */
 .message, .chat-input-area, .sidebar{backface-visibility:hidden}
-
-/* Modal styles for feedback */
-.modal{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:40;pointer-events:none;opacity:0;transition:opacity 200ms ease;
-}
-.modal[aria-hidden="false"]{pointer-events:auto;opacity:1}
-.modal-panel{
-  width:min(680px, calc(100% - 48px));background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;box-shadow:0 20px 50px rgba(2,6,23,0.6);backdrop-filter:blur(8px);
-}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.modal-header h2{margin:0;font-size:1.05rem}
-.modal-close{background:transparent;border:none;font-size:22px;line-height:1;cursor:pointer;color:var(--muted)}
-.modal-body{display:flex;flex-direction:column;gap:8px}
-.modal-body label{font-size:0.85rem;color:var(--muted)}
-.modal-body input,.modal-body textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);outline:none}
-.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
-.btn-primary{background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.08);padding:10px 14px;border-radius:10px;cursor:pointer}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;cursor:pointer}
