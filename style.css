@@ -1,111 +1,19 @@
-/* Liquid glass + ambient multicolor background
-   Full ambient enabled, but with no extra sidebar sections beyond General.
-*/
-:root{
-  --bg:#0f1724;
-  --glass-ghost: rgba(255,255,255,0.06);
-  --accent: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  --glass-border: rgba(255,255,255,0.12);
-  --panel-bg: rgba(255,255,255,0.06);
-  --text: #EAF2F8;
-  --muted: rgba(234,242,248,0.7);
+/* Weather card styles + small renderer helpers */
+
+.weather-card{display:flex;flex-direction:column;gap:12px;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 24px rgba(2,6,23,0.35);min-width:260px;max-width:560px}
+.wc-header{display:flex;align-items:center;justify-content:space-between}
+.wc-title{font-weight:600;font-size:15px}
+.wc-current{display:flex;flex-direction:column;align-items:flex-end}
+.wc-temp{font-size:20px;font-weight:700}
+.wc-cond{font-size:12px;color:rgba(255,255,255,0.8)}
+.wc-body{display:flex;flex-direction:column;gap:8px}
+.wc-highlow{display:flex;gap:12px;color:rgba(255,255,255,0.9)}
+.wc-sun{font-size:12px;color:rgba(255,255,255,0.8)}
+.wc-spark{margin-top:6px}
+.wc-spark svg{width:100%;height:48px;display:block}
+
+/* small responsive tweaks */
+@media (max-width:640px){
+  .weather-card{min-width:180px;padding:10px}
+  .wc-temp{font-size:18px}
 }
-*{box-sizing:border-box}
-html,body{height:100%;}
-body{
-  margin:0;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: radial-gradient(1200px 600px at 10% 20%, rgba(255,63,111,0.06), transparent 8%),
-              radial-gradient(900px 500px at 90% 80%, rgba(63,97,255,0.06), transparent 10%),
-              var(--bg);
-  color:var(--text);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:40px;
-  overflow:hidden;
-}
-.ambient-bg{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  overflow:hidden;
-  z-index:0;
-}
-.blob{
-  position:absolute;
-  width:480px;
-  height:480px;
-  border-radius:50%;
-  filter: blur(60px) saturate(1.1) contrast(1.05);
-  transform: translate3d(0,0,0);
-  opacity:0.55;
-  mix-blend-mode:screen;
-  will-change:transform,opacity,filter;
-}
-.blob.b1{left:-10%;top:5%;background:radial-gradient(circle at 30% 30%, rgba(255,80,140,0.35), rgba(255,80,140,0.12) 30%, transparent 60%)}
-.blob.b2{right:-15%;top:10%;background:radial-gradient(circle at 70% 60%, rgba(80,110,255,0.35), rgba(80,110,255,0.12) 30%, transparent 60%)}
-.blob.b3{left:20%;bottom:-10%;background:radial-gradient(circle at 40% 40%, rgba(90,255,150,0.32), rgba(90,255,150,0.10) 30%, transparent 60%)}
-.blob.b4{right:20%;bottom:-10%;background:radial-gradient(circle at 60% 60%, rgba(255,200,80,0.32), rgba(255,200,80,0.10) 30%, transparent 60%)}
-.app-grid{
-  position:relative;
-  z-index:1;
-  width: min(1200px, calc(100% - 80px));
-  height: min(820px, calc(100vh - 80px));
-  display:grid;
-  grid-template-columns: 300px 1fr;
-  gap:28px;
-  align-items:stretch;
-}
-.sidebar{
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-  border:1px solid rgba(255,255,255,0.06);
-  padding:22px;
-  border-radius:16px;
-  backdrop-filter: blur(8px) saturate(1.05);
-  -webkit-backdrop-filter: blur(8px) saturate(1.05);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  box-shadow: 0 10px 30px rgba(2,6,23,0.45);
-}
-.brand h2{margin:0;font-size:20px;letter-spacing:0.6px}
-.brand .tag{color:var(--muted);font-size:12px;margin-top:6px}
-.conversations{margin-top:28px;display:flex;flex-direction:column;gap:10px}
-.conv{
-  padding:12px 14px;border-radius:12px;color:var(--muted);cursor:pointer;transition:all .18s ease;background:rgba(255,255,255,0.01);border:1px solid transparent;
-}
-.conv.active{background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));color:var(--text);box-shadow: inset 0 -1px 0 rgba(255,255,255,0.02)}
-.sidebar-footer{color:var(--muted);font-size:12px;text-align:left}
-.main-chat{display:flex;flex-direction:column}
-.chat-header{display:flex;align-items:center;justify-content:space-between;padding:16px 10px 0 10px}
-.header-left h3{margin:0;font-size:18px}
-.status{font-size:12px;color:var(--muted);margin-left:10px}
-.icon-btn{background:transparent;border:none;color:var(--muted);padding:8px;border-radius:10px;cursor:pointer}
-.icon-btn:hover{color:var(--text);background:rgba(255,255,255,0.02)}
-.chat-container{
-  flex:1;display:flex;flex-direction:column;margin-top:10px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(10px) saturate(1.1);-webkit-backdrop-filter: blur(10px) saturate(1.1);box-shadow:0 20px 50px rgba(2,6,23,0.5);
-}
-.chat-messages{padding:28px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;}
-.message{max-width:75%;padding:12px 16px;border-radius:14px;font-size:15px;line-height:1.35}
-.user-message{align-self:flex-end;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);box-shadow: 0 6px 18px rgba(2,6,23,0.35)}
-.bot-message{align-self:flex-start;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04)}
-.chat-input-area{display:flex;padding:16px;border-top:1px solid rgba(255,255,255,0.02);gap:12px}
-#user-input{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);padding:14px;border-radius:12px;color:var(--text);outline:none;font-size:15px}
-#user-input::placeholder{color:rgba(234,242,248,0.55)}
-#send-button{background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));border:none;padding:12px 14px;border-radius:10px;cursor:pointer;color:var(--text);display:inline-flex;align-items:center;justify-content:center}
-#send-button:disabled{opacity:0.5}
-@media(max-width:880px){
-  .app-grid{grid-template-columns:1fr;gap:18px;padding:20px;width:calc(100% - 40px);height:auto}
-  .sidebar{order:2}
-  .main-chat{order:1}
-}
-@media (prefers-reduced-motion: reduce){
-  .blob{animation:none;transition:none;filter:blur(32px)!important;}
-  .conv:hover{transform:none}
-  .chat-messages{scroll-behavior:auto}
-}
-.message, .chat-input-area, .sidebar{backface-visibility:hidden}
