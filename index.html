@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixNet</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="PixNet AI assistant interface">
+    <link rel="stylesheet" href="style.css?v=20261017-tablet-safe">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-
-    <!-- Ambient background shapes for a desktop feel -->
     <div class="ambient-bg" aria-hidden="true">
         <span class="blob b1"></span>
         <span class="blob b2"></span>
@@ -22,7 +20,7 @@
         <aside class="sidebar">
             <div class="brand">
                 <h2>PixNet</h2>
-                <p class="tag">AI Chat · Desktop</p>
+                <p class="tag">AI assistant</p>
             </div>
 
             <div class="conversations">
@@ -42,17 +40,19 @@
                     <h3>General</h3>
                     <span class="status">Online</span>
                 </div>
-                <div class="header-right">
-                    <button class="icon-btn" id="btn-theme" title="Toggle theme"><i class="fas fa-moon"></i></button>
-                </div>
+                <button class="icon-btn" id="btn-theme" type="button" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
             </header>
 
-            <section class="chat-container">
-                <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
+            <section class="chat-container" aria-label="Chat application">
+                <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
+                    <div class="message bot-message">Hello! I'm an AI assistant. How can I help you today?</div>
+                </div>
 
                 <div class="chat-input-area">
-                    <input type="text" id="user-input" placeholder="Type your message... (Enter to send, Ctrl+Enter for newline)" autofocus>
-                    <button id="send-button" disabled title="Send message">
+                    <input type="text" id="user-input" placeholder="Type your message..." autofocus>
+                    <button id="send-button" type="button" disabled aria-label="Send message">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -60,6 +60,6 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=20261017-tablet-safe"></script>
 </body>
 </html>
