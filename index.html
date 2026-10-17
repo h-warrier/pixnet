@@ -26,9 +26,9 @@
             </div>
 
             <div class="conversations">
-                <div class="conv active">General</div>
-                <div class="conv">Project Notes</div>
-                <div class="conv">Feedback</div>
+                <div class="conv active" id="conv-general">General</div>
+                <div class="conv" id="conv-project">Project Notes</div>
+                <div class="conv" id="conv-feedback">Feedback</div>
             </div>
 
             <footer class="sidebar-footer">
@@ -48,7 +48,9 @@
             </header>
 
             <section class="chat-container">
-                <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
+                <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
+                    <div class="message bot-message">Hello! I'm an AI assistant. How can I help you today?</div>
+                </div>
 
                 <div class="chat-input-area">
                     <input type="text" id="user-input" placeholder="Type your message... (Enter to send, Ctrl+Enter for newline)" autofocus>
@@ -58,6 +60,26 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Feedback modal (opens mail client) -->
+    <div id="feedback-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="feedback-title">
+      <div class="modal-panel" role="document">
+        <header class="modal-header">
+          <h2 id="feedback-title">Send Feedback</h2>
+          <button class="modal-close" id="feedback-close" aria-label="Close">&times;</button>
+        </header>
+        <div class="modal-body">
+          <label for="fb-subject">Subject</label>
+          <input id="fb-subject" type="text" placeholder="Feedback subject">
+          <label for="fb-body">Message</label>
+          <textarea id="fb-body" rows="6" placeholder="Describe your feedback..."></textarea>
+        </div>
+        <footer class="modal-footer">
+          <button id="fb-send" class="btn-primary">Open Mail App</button>
+          <button id="fb-copy" class="btn-ghost">Copy Email Address</button>
+        </footer>
+      </div>
     </div>
 
     <script src="script.js"></script>

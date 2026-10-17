@@ -129,3 +129,66 @@ userInput.addEventListener('keypress', function(e){ if (e.key === 'Enter' && !e.
 userInput.addEventListener('input', ()=>{ sendButton.disabled = userInput.value.trim() === ''; });
 
 if (userInput.value.trim() !== '') sendButton.disabled = false;
+
+// --- Feedback modal behavior ---
+const convFeedback = document.getElementById('conv-feedback');
+const feedbackModal = document.getElementById('feedback-modal');
+const feedbackClose = document.getElementById('feedback-close');
+const fbSend = document.getElementById('fb-send');
+const fbCopy = document.getElementById('fb-copy');
+const fbSubject = document.getElementById('fb-subject');
+const fbBody = document.getElementById('fb-body');
+const FEEDBACK_EMAIL = 'warrier1414@gmail.com';
+
+function openFeedbackModal(){
+    if (!feedbackModal) return;
+    feedbackModal.setAttribute('aria-hidden','false');
+    // focus the subject field
+    if (fbSubject) fbSubject.focus();
+}
+function closeFeedbackModal(){
+    if (!feedbackModal) return;
+    feedbackModal.setAttribute('aria-hidden','true');
+}
+
+if (convFeedback){
+    convFeedback.addEventListener('click', (e)=>{
+        e.preventDefault();
+        openFeedbackModal();
+    });
+}
+if (feedbackClose){ feedbackClose.addEventListener('click', closeFeedbackModal); }
+
+// send via mail client using mailto:
+if (fbSend){
+    fbSend.addEventListener('click', ()=>{
+        const subject = fbSubject && fbSubject.value ? fbSubject.value : 'PixNet feedback';
+        const body = fbBody && fbBody.value ? fbBody.value : '';
+        const mailto = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        // attempt to open mail client
+        window.location.href = mailto;
+        closeFeedbackModal();
+    });
+}
+
+// copy email to clipboard as fallback
+if (fbCopy){
+    fbCopy.addEventListener('click', async ()=>{
+        try{
+            await navigator.clipboard.writeText(FEEDBACK_EMAIL);
+            fbCopy.textContent = 'Copied!';
+            setTimeout(()=> fbCopy.textContent = 'Copy Email Address', 2000);
+        }catch(err){
+            console.warn('Clipboard failed', err);
+            // fallback: select and prompt
+            const ta = document.createElement('textarea'); ta.value = FEEDBACK_EMAIL; document.body.appendChild(ta); ta.select();
+            try{ document.execCommand('copy'); fbCopy.textContent = 'Copied!'; }catch(e){ alert(`Email: ${FEEDBACK_EMAIL}`); }
+            document.body.removeChild(ta);
+        }
+    });
+}
+
+// close on Escape
+document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape') closeFeedbackModal();
+});
